@@ -1,6 +1,6 @@
-(() => {
+// TODO - unit tests
 
-  console.log('it is working');
+(() => {
 
   window.__ = window.__ || {
 
