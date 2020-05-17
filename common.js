@@ -1,5 +1,7 @@
 (() => {
 
+  console.log('it is working');
+
   window.__ = window.__ || {
 
     _return: (param, fn, _return) => {
@@ -61,7 +63,7 @@
     isNill: (param, _return) =>
       __._return(
         param,
-        () => param === undefined || param === null,
+        () => param === void 0 || param === null,
         _return
       ),
 
