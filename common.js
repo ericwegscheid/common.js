@@ -103,6 +103,8 @@
       return count;
     },
 
+    noop: () => {},
+
     // TODO - make me a HTTP interface > 
     HTTP: {
       get: (uri, onSuccess, onFail) => {
@@ -110,9 +112,9 @@
         req.onreadystatechange = () => {
           if( req.readyState === 4 ) {
             if( req.status === 200 ) {
-              (__.isFn(onSuccess, true) || () => {})(req);
+              (__.isFn(onSuccess, true) || __.noop)(req);
             } else {
-              (__.isFn(onFail, true) || () => {})(req);
+              (__.isFn(onFail, true) || __.noop)(req);
             }
           }
         }
