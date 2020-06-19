@@ -127,13 +127,19 @@
     },
 
     EVENTS: {
-      getDelegationEventHandler: (name, e) => __.EVENTS.handlers[e.target.attributes.getNamedItem(name).value],
+      getDelegationEventHandlers: (name, e) => (__.EVENTS.handlers[e.target.attributes.getNamedItem(name).value] || '').split(' '),
       delegationEvents: {
         fnenter: {
           type: 'keypress',
           fn: e => {
             if (e.which !== 13 || !e.target.hasAttribute('fnenter')) { return; }
-            __.isFn(__.EVENTS.getDelegationEventHandler('fnenter', e), true)(e);
+            for (handler of __.EVENTS.getDelegationEventHandlers('fnenter', e)) {
+              try {
+                __.isFn(handler, true)(e);
+              } catch(err) {
+                console.error(handler + ' is not a function');
+              }
+            }
           }
         },
         fnclick: {
