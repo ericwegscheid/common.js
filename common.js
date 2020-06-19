@@ -128,25 +128,28 @@
 
     EVENTS: {
       getDelegationEventHandlers: (name, e) => (__.EVENTS.handlers[e.target.attributes.getNamedItem(name).value] || '').split(' '),
+      executeDelegationEventHandlers: (name, e) => {
+        for (handler of __.EVENTS.getDelegationEventHandlers(name, e)) {
+          try {
+            __.isFn(handler, true)(e);
+          } catch(err) {
+            console.error(handler + ' is not a function');
+          }
+        }
+      },
       delegationEvents: {
         fnenter: {
           type: 'keypress',
           fn: e => {
             if (e.which !== 13 || !e.target.hasAttribute('fnenter')) { return; }
-            for (handler of __.EVENTS.getDelegationEventHandlers('fnenter', e)) {
-              try {
-                __.isFn(handler, true)(e);
-              } catch(err) {
-                console.error(handler + ' is not a function');
-              }
-            }
+            __.EVENTS.executeDelegationEventHandlers('fnenter', e);
           }
         },
         fnclick: {
           type: 'click',
           fn: e => {
             if (!e.target.hasAttribute('fnclick')) { return; }
-            __.isFn(__.EVENTS.getDelegationEventHandler('fnclick', e), true)(e);
+            __.EVENTS.executeDelegationEventHandlers('fnenter', e);
           }
         },
       },
