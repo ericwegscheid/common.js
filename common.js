@@ -139,23 +139,21 @@
         fnclick: {
           type: 'click',
           fn: e => {
+            console.log(e.target)
             debugger;
-            if (!e.target.hasAttribute('fnclick')) { return; }
-            debugger;
-            __.isFn(__.EVENTS.getDelegationEventHandler('fnclick', e), true)(e);
+            if (e.target.hasAttribute('fnclick')) {
+              __.isFn(__.EVENTS.getDelegationEventHandler('fnclick', e), true)(e);
+            }
           }
         },
       },
       enableDelegationEvents: (_eventTypes, _element, handlersNS) => {
         let eventTypes = __.isArr(_eventTypes) ? _eventTypes : [_eventTypes];
         Object.assign(__.EVENTS.handlers, handlersNS);
-        debugger;
         for (_event of eventTypes) {
           let event = __.EVENTS.delegationEvents[_event];
-          debugger;
           if (event) {
             let element = _element instanceof HTMLElement ? _element : document.body;
-            debugger;
             element.addEventListener(event.type, event.fn);
           }
         }
