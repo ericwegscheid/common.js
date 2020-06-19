@@ -131,27 +131,32 @@
       delegationEvents: {
         fnenter: {
           type: 'keypress',
-          fn: (e) => {
+          fn: e => {
             if (e.which !== 13 || !e.target.hasAttribute('fnenter')) { return; }
             __.isFn(__.EVENTS.getDelegationEventHandler('fnenter', e), true)(e);
           }
         },
         fnclick: {
           type: 'click',
-          fn: (e) => {
+          fn: e => {
+            debugger;
             if (!e.target.hasAttribute('fnclick')) { return; }
+            debugger;
             __.isFn(__.EVENTS.getDelegationEventHandler('fnclick', e), true)(e);
           }
         },
       },
       enableDelegationEvents: (_eventTypes, _element, handlersNS) => {
         let eventTypes = __.isArr(_eventTypes) ? _eventTypes : [_eventTypes];
+        Object.assign(__.EVENTS.handlers, handlersNS);
+        debugger;
         for (_event in eventTypes) {
           let event = __.EVENTS.delegationEvents[_event];
+          debugger;
           if (event) {
             let element = _element instanceof HTMLElement ? _element : document.body;
+            debugger;
             element.addEventListener(event.type, event.fn);
-            Object.assign(__.EVENTS.handlers, handlersNS)
           }
         }
       },
