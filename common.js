@@ -127,7 +127,10 @@
     },
 
     EVENTS: {
-      getDelegationEventHandlers: (name, e) => (__.EVENTS.handlers[e.target.attributes.getNamedItem(name).value] || '').split(' '),
+      getDelegationEventHandlers: (name, e) => {
+        debugger;
+        return (__.EVENTS.handlers[e.target.attributes.getNamedItem(name).value] || '').split(' ');
+      },
       executeDelegationEventHandlers: (name, e) => {
         for (handler of __.EVENTS.getDelegationEventHandlers(name, e)) {
           try {
