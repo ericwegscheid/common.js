@@ -86,7 +86,7 @@
     getQueryParams: () => {
       const output = {};
       const pairs = location.search.slice(1).split('&');
-      for( let i = 0, len = pairs.length; i < len; i++ ) {
+      for (let i = 0, len = pairs.length; i < len; i++) {
         let pair = pairs[i].split('=');
         output[pair[0]] = pair[1];
       }
@@ -96,7 +96,7 @@
     getElementIndex: element => {
       let { previousSibling } = element;
       let count = 0;
-      while( previousSibling ) {
+      while (previousSibling) {
         count++;
         previousSibling = previousSibling.previousSibling;
       }
@@ -110,8 +110,8 @@
       get: (uri, onSuccess, onFail) => {
         var req = new XMLHttpRequest();
         req.onreadystatechange = () => {
-          if( req.readyState === 4 ) {
-            if( req.status === 200 ) {
+          if (req.readyState === 4) {
+            if (req.status === 200) {
               (__.isFn(onSuccess, true) || __.noop)(req);
             } else {
               (__.isFn(onFail, true) || __.noop)(req);
@@ -124,6 +124,39 @@
       post: () => console.warn('HTTP.post not supported yet'),
       put: () => console.warn('HTTP.put not supported yet'),
       delete: () => console.warn('HTTP.delete supported yet')
+    },
+
+    EVENTS: {
+      getDelegationEventHandler: (name, e) => __.EVENTS.handlers[e.target.attributes.getNamedItem(name).value],
+      delegationEvents: {
+        fnenter: {
+          type: 'keypress',
+          fn: (e) => {
+            if (e.which !== 13 || !e.target.hasAttribute('fnenter')) { return; }
+            __.isFn(__.EVENTS.getDelegationEventHandler('fnenter', e), true)(e);
+          }
+        },
+        fnclick: {
+          type: 'click',
+          fn: (e) => {
+            if (!e.target.hasAttribute('fnclick')) { return; }
+            __.isFn(__.EVENTS.getDelegationEventHandler('fnclick', e), true)(e);
+          }
+        },
+      },
+      enableDelegationEvents: (_eventTypes, _element, handlersNS) => {
+        let eventTypes = __.isArr(_eventTypes) ? _eventTypes : [_eventTypes];
+        for (_event in eventTypes) {
+          let event = __.EVENTS.delegationEvents[event];
+          if (event) {
+            let element = _element instanceof HTMLElement ? _element : document.body;
+            element.addEventListener(event.type, event.fn);
+            Object.assign(__.EVENTS.handlers, handlersNS)
+          }
+        }
+      },
+      // reserved for storing event handlers
+      handlers: {}
     }
 
   };
