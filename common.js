@@ -151,7 +151,7 @@
         Object.assign(__.EVENTS.handlers, handlersNS);
         debugger;
         for (_event of eventTypes) {
-          let event = __.EVENTS.delegationEvents[eventTypes[_event]];
+          let event = __.EVENTS.delegationEvents[_event];
           debugger;
           if (event) {
             let element = _element instanceof HTMLElement ? _element : document.body;
