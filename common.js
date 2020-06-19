@@ -147,7 +147,7 @@
       enableDelegationEvents: (_eventTypes, _element, handlersNS) => {
         let eventTypes = __.isArr(_eventTypes) ? _eventTypes : [_eventTypes];
         for (_event in eventTypes) {
-          let event = __.EVENTS.delegationEvents[event];
+          let event = __.EVENTS.delegationEvents[_event];
           if (event) {
             let element = _element instanceof HTMLElement ? _element : document.body;
             element.addEventListener(event.type, event.fn);
