@@ -139,9 +139,10 @@
         fnclick: {
           type: 'click',
           fn: e => {
+            console.log(e.currentTarget)
             console.log(e.target)
             debugger;
-            if (e.target.hasAttribute('fnclick')) {
+            if (e.currentTarget.hasAttribute('fnclick')) {
               __.isFn(__.EVENTS.getDelegationEventHandler('fnclick', e), true)(e);
             }
           }
