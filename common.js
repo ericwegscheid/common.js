@@ -128,8 +128,11 @@
 
     EVENTS: {
       getDelegationEventHandlers: (name, e) => {
-        debugger;
-        return (__.EVENTS.handlers[e.target.attributes.getNamedItem(name).value] || '').split(' ');
+        let handlers = [];
+        for (key of (e.target.attributes.getNamedItem(name).value || '').split(' ')) {
+          handlers.push(__.EVENTS.handlers[key]);
+        }
+        return handlers;
       },
       executeDelegationEventHandlers: (name, e) => {
         for (handler of __.EVENTS.getDelegationEventHandlers(name, e)) {
@@ -152,7 +155,7 @@
           type: 'click',
           fn: e => {
             if (!e.target.hasAttribute('fnclick')) { return; }
-            __.EVENTS.executeDelegationEventHandlers('fnenter', e);
+            __.EVENTS.executeDelegationEventHandlers('fnclick', e);
           }
         },
       },
