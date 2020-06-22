@@ -69,7 +69,7 @@
 
     isSet: param => param !== void 0,
 
-    select: (query, all) => document[all ? 'querySelectorAll' : 'querySelector'](query),
+    query: (query, all) => document[all ? 'querySelectorAll' : 'querySelector'](query),
 
     copy: str => {
       const el = document.createElement('textarea');
@@ -136,11 +136,7 @@
       },
       executeDelegationEventHandlers: (name, e) => {
         for (handler of __.EVENTS.getDelegationEventHandlers(name, e)) {
-          try {
-            __.isFn(handler, true)(e);
-          } catch(err) {
-            console.error(handler + ' is not a function');
-          }
+          __.isFn(handler, true)(e);
         }
       },
       delegationEvents: {
