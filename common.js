@@ -105,6 +105,8 @@
 
     noop: () => {},
 
+    cache: (key, value) => localStorage[value === void 0 ? 'getItem' : 'setItem'](key, value),
+
     // TODO - make me a HTTP interface > 
     HTTP: {
       get: (uri, onSuccess, onFail) => {
@@ -168,7 +170,7 @@
       },
       // reserved for storing event handlers
       handlers: {}
-    }
+    },
 
   };
 
