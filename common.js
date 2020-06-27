@@ -107,6 +107,38 @@
 
     cache: (key, value) => localStorage[value === void 0 ? 'getItem' : 'setItem'](key, value),
 
+    QUEUE: {
+      _q: [],
+      timeout: 1000,
+      push: (input) => {
+        if (Array.isArray(input)) {
+          for (let statement of input) {
+            __.QUEUE._q.push(statement);
+          }
+        } else if (typeof input === 'string') {
+            __.QUEUE._q.push(input);
+        } else {
+          console.warning('Invalid input, __.QUEUE.push() expects `string | string[]`');
+        }
+        return __.QUEUE;
+      },
+      pop: next => {
+        if (__.QUEUE._q.length) {
+          let t = setTimeout(() => {
+              __.isFn(__.QUEUE._q.pop(), true)();
+              if (next) {
+                __.QUEUE.pop(true);
+              }
+            clearTimeout(t);
+          }, __.QUEUE.timeout);
+        }
+      },
+      run: () => {
+        __.QUEUE.pop(true);
+        return __.QUEUE;
+      }
+    },
+
     // TODO - make me a HTTP interface > 
     HTTP: {
       get: (uri, onSuccess, onFail) => {
