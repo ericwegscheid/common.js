@@ -109,7 +109,11 @@
 
     QUEUE: {
       _q: [],
-      timeout: 1000,
+      _t: 1000,
+      setTimeout: n => {
+        __.QUEUE._t = __.isNum(n) ? n : __.QUEUE._t;
+        return __.QUEUE;
+      },
       push: (input) => {
         if (Array.isArray(input)) {
           for (let statement of input) {
@@ -125,12 +129,12 @@
       pop: next => {
         if (__.QUEUE._q.length) {
           let t = setTimeout(() => {
-              __.isFn(__.QUEUE._q.pop(), true)();
-              if (next) {
-                __.QUEUE.pop(true);
-              }
+            __.isFn(__.QUEUE._q.pop(), true)();
+            if (next) {
+              __.QUEUE.pop(true);
+            }
             clearTimeout(t);
-          }, __.QUEUE.timeout);
+          }, __.QUEUE._t);
         }
       },
       run: () => {
