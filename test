@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+
+const __ = require('./common.js');
+
+const should = (title, callback) => {
+  console.log(title);
+  callback();
+};
+
+const test = (doesPass) => {
+  if (doesPass) {
+    console.log('pass');
+  } else {
+    console.error('fail');
+    process.exit(1);
+  }
+}
+
+should('_return() returns same value as the provide callback function', () => {
+  test(__._return(1, () => true) === true);
+  test(__._return(1, () => false) === false);
+  test(__._return(1, () => 1) === 1);
+  test(__._return(1, () => 'test') === 'test');
+  test(__._return(1, () => 0) === 0);
+  test(__._return(1, () => null) === null);
+  test(__._return(1, () => []) !== []);
+  const arr = [];
+  test(__._return(1, () => arr) === arr);
+  test(__._return(1, () => {}) !== {});
+  const obj = {};
+  test(__._return(1, () => obj) === obj);
+});
+
+should('_isArr returns false is param is not an array', () => {
+  test(__.isArr({}) === false);
+  test(__.isArr('test') === false);
+  test(__.isArr(null) === false);
+  test(__.isArr(1) === false);
+  test(__.isArr(false) === false);
+});
+
