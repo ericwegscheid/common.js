@@ -2,40 +2,107 @@
 
 const __ = require('./common.js');
 
+function getCallingLine() {
+  const error = new Error();
+  return String(error.stack.split('\n')[3]).trim();
+}
+
 const should = (title, callback) => {
+  console.log('');
   console.log(title);
   callback();
 };
 
-const test = (doesPass) => {
+// simply takes a boolean and logs accordingly
+const assert = (doesPass) => {
   if (doesPass) {
-    console.log('pass');
+    console.log(`  pass`);
   } else {
-    console.error('fail');
+    console.error(`  fail --> ${getCallingLine()}`);
     process.exit(1);
   }
-}
+};
 
-should('_return() returns same value as the provide callback function', () => {
-  test(__._return(1, () => true) === true);
-  test(__._return(1, () => false) === false);
-  test(__._return(1, () => 1) === 1);
-  test(__._return(1, () => 'test') === 'test');
-  test(__._return(1, () => 0) === 0);
-  test(__._return(1, () => null) === null);
-  test(__._return(1, () => []) !== []);
+/**/
+
+should('_return: returns same value as the provide callback function', () => {
+  // in this test the first param is irrelavent
+  assert(__._return(1, () => true) === true);
+  assert(__._return(1, () => false) === false);
+  assert(__._return(1, () => 1) === 1);
+  assert(__._return(1, () => 'test') === 'test');
+  assert(__._return(1, () => 0) === 0);
+  assert(__._return(1, () => null) === null);
+  assert(__._return(1, () => []) !== []);
   const arr = [];
-  test(__._return(1, () => arr) === arr);
-  test(__._return(1, () => {}) !== {});
+  assert(__._return(1, () => arr) === arr);
+  assert(__._return(1, () => {}) !== {});
   const obj = {};
-  test(__._return(1, () => obj) === obj);
+  assert(__._return(1, () => obj) === obj);
 });
 
-should('_isArr returns false is param is not an array', () => {
-  test(__.isArr({}) === false);
-  test(__.isArr('test') === false);
-  test(__.isArr(null) === false);
-  test(__.isArr(1) === false);
-  test(__.isArr(false) === false);
+/**/
+
+should('_return: returns same value as original input if third param is true', () => {
+  // in this test the second param is irrelavent
+  assert(__._return(1, null, true) === 1);
+  assert(__._return(false, null, true) === false);
+  const a = {};
+  const b = {};
+  assert(__._return(a, null, true) === a);
+  assert(__._return(a, null, true) !== b);
 });
+
+/**/
+
+should('isArr: returns false is param is not an array', () => {
+  assert(__.isArr({}) === false);
+  assert(__.isArr('test') === false);
+  assert(__.isArr(null) === false);
+  assert(__.isArr(1) === false);
+  assert(__.isArr(false) === false);
+});
+
+/**/
+
+should('isArr: returns same value as input if second param is true', () => {
+  const a = [];
+  const b = [];
+  assert(__.isArr(a, true) === a);
+  assert(__.isArr(a, true) !== b);
+  assert(__.isArr([], true) !== []);
+});
+
+/**/
+
+should('isArr: returns false if input is not an array and second param is true', () => {
+  assert(__.isArr('abc', true) === false);
+});
+
+/**/
+
+should('isFn: returns same value as input if second param is true', () => {
+  const a = () => 1;
+  const b = () => 1;
+  assert(__.isFn(a, true) === a);
+  assert(__.isFn(a, true) !== b);
+  assert(__.isFn(() => 1, true) !== (() => 1));
+  const fn = (v) => v.a;
+  assert(__.isFn(fn, true)({ a: 1 }) === 1);
+});
+
+/**/
+
+should('isFn: returns noop if input is not a function and second param is true', () => {
+  assert(__.isFn('abc', true)() === undefined);
+});
+
+/**/
+
+should('isFn: returns false if input is not a function', () => {
+  assert(__.isFn('abc') === false);
+});
+
+/**/
+
 

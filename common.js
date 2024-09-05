@@ -1,109 +1,60 @@
-// TODO - unit tests
+//                                                    _     
+//    _________  ____ ___  ____ ___  ____  ____      (_)____
+//   / ___/ __ \/ __ `__ \/ __ `__ \/ __ \/ __ \    / / ___/
+//  / /__/ /_/ / / / / / / / / / / / /_/ / / / /   / (__  ) 
+//  \___/\____/_/ /_/ /_/_/ /_/ /_/\____/_/ /_(_)_/ /____/  
+//                                             /___/        
+//                                                          
+////////////////////////////////////////////////////////////
 
-const __ = {
+let __ = {};
+const common = {
+
+  _isFn: (param) => typeof param === 'function',
+  _isArr: (param) => Array.isArray(param),
+  _isStr: (param) => typeof param === 'string',
+  _isNum: (param) => typeof param === 'number',
+  _isBool: (param) => typeof param === 'boolean',
+  _isObj: (param) => param && !__.isArr(param) && !__.isFn(param) && !__.isStr(param) && !__.isNum(param) && !__.isBool(param),
+  _isNill: (param) => param === void 0 || param === null,
 
   _return: (param, fn, _return) => {
-    const result = fn();
-    return _return
-      ? result
-        ? param
-        : void 0
-      : result;
+    const result = __._isFn(fn) ? fn() : null;
+    return _return ? __._isFn(fn) && !result ? null : param : result;
   },
 
-  isArr: (param, _return) =>
-    __._return(
-      param,
-      () => Array.isArray(param),
-      _return
-    ),
+  // if falsy return () => {} else param or result
+  _noop_it: (param, result, _return) => {
+    const output = __._return(param, () => result, _return);
+    return !output ? () => {} : output;
+  },
 
-  isFn: (param, _return) =>
-    __._return(
-      param,
-      () => typeof param == 'function',
-      _return
-    ),
+  // if falsy return false else param or result
+  _false_it: (param, result, _return) => {
+    const output = __._return(param, () => result, _return);
+    return !output ? false : output;
+  },
 
-  isStr: (param, _return) =>
-    __._return(
-      param,
-      () => typeof param == 'string',
-      _return
-    ),
+  // if truthy return true else param or result
+  _truth_it: (param, result, _return) => {
+    const output = __._return(param, () => result, _return);
+    return !!output ? true : output;
+  },
 
-  isNum: (param, _return) =>
-    __._return(
-      param,
-      () => typeof param == 'number',
-      _return
-    ),
-
-  isBool: (param, _return) =>
-    __._return(
-      param,
-      () => typeof param == 'boolean',
-      _return
-    ),
-
-  isObj: (param, _return) =>
-    __._return(
-      param,
-      () => param &&
-        !__.isArr(param) &&
-        !__.isFn(param) &&
-        !__.isStr(param) &&
-        !__.isNum(param) &&
-        !__.isBool(param),
-      _return
-    ),
-
-  isNill: (param, _return) =>
-    __._return(
-      param,
-      () => param === void 0 || param === null,
-      _return
-    ),
+  isArr: (param, _return) => __._false_it(param, __._isArr(param), _return),
+  isFn: (param, _return) => __[_return ? '_noop_it' : '_false_it'](param, __._isFn(param), _return),
+  isStr: (param, _return) => __._false_it(param,__._isStr(param), _return),
+  isNum: (param, _return) => __._false_it(param,__._isNum(param), _return),
+  isBool: (param, _return) => __._false_it(param,__._isBool(param), _return),
+  isObj: (param, _return) => __._false_it(param, __._isObj(param), _return),
+  isNill: (param, _return) => __._false_it(param, __._isNill(param), _return),
 
   isSet: param => param !== void 0,
 
-  query: (query, all) => document[all ? 'querySelectorAll' : 'querySelector'](query),
-
-  copy: str => {
-    const el = document.createElement('textarea');
-    el.style.opacity = 0;
-    el.value = str;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-  },
-
-  capitalize: str => str[0].toUpperCase() + str.slice(1),
-
-  getQueryParams: () => {
-    const output = {};
-    const pairs = location.search.slice(1).split('&');
-    for (let i = 0, len = pairs.length; i < len; i++) {
-      let pair = pairs[i].split('=');
-      output[pair[0]] = pair[1];
-    }
-    return output;
-  },
-
-  getElementIndex: element => {
-    let { previousSibling } = element;
-    let count = 0;
-    while (previousSibling) {
-      count++;
-      previousSibling = previousSibling.previousSibling;
-    }
-    return count;
-  },
-
   noop: () => {},
 
-  cache: (key, value) => localStorage[value === void 0 ? 'getItem' : 'setItem'](key, value),
+  capitalize: str => str[0].toUpperCase() + str.slice(1),
+  // TODO: titleCase, kebabCase, snakeCase
 
   QUEUE: {
     _q: [],
@@ -140,27 +91,43 @@ const __ = {
       return __.QUEUE;
     }
   },
+};
 
-  // TODO - make me a HTTP interface > 
-  HTTP: {
-    get: (uri, onSuccess, onFail) => {
-      var req = new XMLHttpRequest();
-      req.onreadystatechange = () => {
-        if (req.readyState === 4) {
-          if (req.status === 200) {
-            (__.isFn(onSuccess, true) || __.noop)(req);
-          } else {
-            (__.isFn(onFail, true) || __.noop)(req);
-          }
-        }
-      }
-      req.open('Get', uri);
-      req.send();
-    },
-    post: () => console.warn('HTTP.post not supported yet'),
-    put: () => console.warn('HTTP.put not supported yet'),
-    delete: () => console.warn('HTTP.delete supported yet')
+const browser = {
+
+  query: (query, all) => document[all ? 'querySelectorAll' : 'querySelector'](query),
+
+  copy: str => {
+    const el = document.createElement('textarea');
+    el.style.opacity = 0;
+    el.value = str;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
   },
+
+  getQueryParams: () => {
+    const output = {};
+    const pairs = location.search.slice(1).split('&');
+    for (let i = 0, len = pairs.length; i < len; i++) {
+      let pair = pairs[i].split('=');
+      output[pair[0]] = pair[1];
+    }
+    return output;
+  },
+
+  getElementIndex: element => {
+    let { previousSibling } = element;
+    let count = 0;
+    while (previousSibling) {
+      count++;
+      previousSibling = previousSibling.previousSibling;
+    }
+    return count;
+  },
+
+  cache: (key, value) => localStorage[value === void 0 ? 'getItem' : 'setItem'](key, value),
 
   EVENTS: {
     getDelegationEventHandlers: (name, e) => {
@@ -205,8 +172,23 @@ const __ = {
     // reserved for storing event handlers
     handlers: {}
   },
-
 };
 
+try {
+  // as browser script
+  window.__ = __ = {
+    ...common,
+    ...browser,
+  };
+} catch(e) {
+  // noop
+}
 
-// module.exports = __;
+try {
+  // as node module
+  module.exports = __ = {
+    ...common,
+  };
+} catch(e) {
+  // noop
+}
